@@ -56,15 +56,19 @@ class BandsintownProvider implements BandsintownProviderInterface
     public function getArtistByName(string $name): ArtistEntityInterface
     {
         try {
-            $params = ['query' => ['app_id' => $this->apiKey]];
-            $res = $this->client->request('GET', $this->apiBaseUrl.$name, $params);
-            if ($res->getStatusCode() === 200) {
-                $data = json_decode($res->getBody()->getContents() , true);
-                return $this->hydrator->hydrateArtist($data);
+            if (trim($name) !== '') {
+                $params = ['query' => ['app_id' => $this->apiKey]];
+                $res = $this->client->request('GET', $this->apiBaseUrl.$name, $params);
+                if ($res->getStatusCode() === 200) {
+                    $data = json_decode($res->getBody()->getContents() , true);
+                    if (!empty($data)) {
+                        return $this->hydrator->hydrateArtist($data);
+                    }
+                }
             }
             throw new ArtistNotFoundException();
         } catch (\Exception $e) {
-            throw $e;
+            throw new $e;
         }
     }
 
@@ -76,15 +80,21 @@ class BandsintownProvider implements BandsintownProviderInterface
     public function getEventsByArtistName(string $name): array
     {
         try {
-            $params = ['query' => ['app_id' => $this->apiKey]];
-            $res = $this->client->request('GET', $this->apiBaseUrl.$name.'/events', $params);
-            if ($res->getStatusCode() === 200) {
-                $data = json_decode($res->getBody()->getContents() , true);
-                $events = [];
-                foreach ($data as $dataEvent) {
-                    $events[] = $this->hydrator->hydrateEvent($dataEvent);
+            if (trim($name) !== '') {
+                $params = ['query' => ['app_id' => $this->apiKey]];
+                $res = $this->client->request('GET', $this->apiBaseUrl.$name.'/events', $params);
+                if ($res->getStatusCode() === 200) {
+                    $data = json_decode($res->getBody()->getContents() , true);
+                    if (!empty($data)) {
+                        $events = [];
+                        foreach ($data as $dataEvent) {
+                            if (!empty($dataEvent)) {
+                                $events[] = $this->hydrator->hydrateEvent($dataEvent);
+                            }
+                        }
+                        return $events;
+                    }
                 }
-                return $events;
             }
             throw new EventNotFoundException();
         } catch (\Exception $e) {

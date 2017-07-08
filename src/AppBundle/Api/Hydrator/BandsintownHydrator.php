@@ -118,18 +118,12 @@ class BandsintownHydrator implements HydratorInterface
             $entity->setProviderUrl(trim($data['url']));
         }
         if (isset($data['on_sale_datetime']) && !empty($data['on_sale_datetime'])) {
-            try {
-                $saleDate =new \DateTime($data['on_sale_datetime']);
-                $entity->setSaleDate($saleDate);
-            } catch (\Exception $e) {
-            }
+            $saleDate = new \DateTime($data['on_sale_datetime']);
+            $entity->setSaleDate($saleDate);
         }
         if (isset($data['datetime']) && !empty($data['datetime'])) {
-            try {
-                $saleDate =new \DateTime($data['datetime']);
-                $entity->setEventDate($saleDate);
-            } catch (\Exception $e) {
-            }
+            $saleDate = new \DateTime($data['datetime']);
+            $entity->setEventDate($saleDate);
         }
         if (isset($data['venue'])) {
             $entity->setVenue($this->hydrateVenue($data['venue']));
