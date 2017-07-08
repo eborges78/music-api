@@ -33,3 +33,12 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+
+    BandsintowProviderService:
+        class: AppBundle\Api\Provider\BandsintownProvider
+        public: true
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $apiKey: "%provider_bandsintown_key%"
+            $apiBaseUrl: "%provider_bandsintown_baseurl%"

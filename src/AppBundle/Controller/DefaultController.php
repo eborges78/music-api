@@ -2,24 +2,53 @@
 
 namespace AppBundle\Controller;
 
-use Doctrine\DBAL\Connection;
+use AppBundle\Api\Provider\BandsintownProvider;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
     /**
-     * @Route("/", name="homepage")
+     * @Route("/", name="homeApi")
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
-        /** @var Connection $connection */
-        $connection = $this->getDoctrine()->getConnection();
-        $connection->createQueryBuilder()->select('id,test')->from('test')->execute()->fetchAll(\PDO::FETCH_ASSOC);
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-        ]);
+        $data = [
+            'code' => '200',
+            'name' => $this->getParameter('app_name'),
+            'version' => $this->getParameter('app_version'),
+            'api'  => [
+                '/api/artist/{artistName}',
+                '/api/events/{artistName}'
+            ]
+        ];
+        return $this->getJsonResponse($data);
+    }
+
+    /**
+     * @Route("/api/artist/{artistName}", name="artistApi")
+     * @param string $artistName
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function artistAction(string $artistName)
+    {
+        /** @var BandsintownProvider $provider */
+        $provider = $this->get('BandsintowProviderService');
+        $artists = $provider->getArtistByName($artistName);
+
+        return $this->getJsonResponse([$artists]);
+    }
+
+    /**
+     * @Route("/api/events/{artistName}", name="eventApi")
+     * @param string $artistName
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function eventAction(string $artistName)
+    {
+        /** @var BandsintownProvider $provider */
+        $provider = $this->get('BandsintowProviderService');
+        $events = $provider->getEventsByArtistName($artistName);
+
+        return $this->getJsonResponse($events);
     }
 }

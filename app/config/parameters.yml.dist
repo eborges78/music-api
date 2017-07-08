@@ -17,3 +17,7 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+
+    #providers keys
+    provider_bandsintown_key: '<your api_key>'
+    provider_bandsintown_baseurl: "http://rest.bandsintown.com/"
