@@ -1,0 +1,30 @@
+version: '2'
+services:
+    php:
+        image: eborges/phpfpm7.1
+        container_name: api-php
+        volumes:
+            - .:/var/www/html
+        environment:
+              XDEBUG_CONFIG: remote_host=192.168.x.x
+              PHP_IDE_CONFIG: serverName=docker
+        links:
+            - mariadb
+
+    nginx:
+        image: eborges/nginx-symfony3
+        container_name: api-nginx
+        volumes:
+            - .:/var/www/html
+        ports:
+            - "80:80"
+        links:
+            - php
+
+    mariadb:
+        image: eborges/mariadb
+        container_name: api-mariadb
+        volumes:
+         - /var/lib/mysql:/var/lib/mysql
+        ports:
+            - "3306:3306"
